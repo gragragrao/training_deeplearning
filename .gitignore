@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyc
+*.py.bak
+.DS_Store
+.python-version
+.coverage
+.vscode*
+# Django stuff:
+*.log
+!.gitkeep
+
+#media/
+#!media/iconimage/nophoto/
+#static/
+#static/scouty/images/
+#static/scouty/select2-4.0.1/
+#static/lp/img/
+#static/lp/fonts/
+media/temp/*.jpg
+*\#*
+lp/templates/bkp/
+
+# Elastic Beanstalk Files
+#.elasticbeanstalk/
+#.elasticbeanstalk/*
+#!.elasticbeanstalk/*.cfg.yml
+#!.elasticbeanstalk/*.global.yml
+.elasticbeanstalk/logs/
+.elasticbeanstalk/app_versions/
+
+
+*.sql
+*.dump
+*.dump.gz
+*.swp
+*.psd
+*.ai
+*.pdf
+*.icloud
+
+*.psd
+
+docker/*/aws/credentials
+assets/*
+
+### Node ###
+# Logs
+npm-debug.log*
+# Dependency directories
+node_modules/
+# Optional npm cache directory
+.npm
+# Optional eslint cache
+.eslintcache
