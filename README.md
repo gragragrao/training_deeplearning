@@ -1,4 +1,6 @@
-# training_deeplearning
+# About
+
+This repository is for reviewing the logic of deep learning and implementing some algorithm using deep learning.(7/23~)
 
 # books I used
 
