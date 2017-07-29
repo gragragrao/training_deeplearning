@@ -1,51 +1,29 @@
-import time
-import numpy as np
-import tensorflow as tf
-from sklearn.model_selection import train_test_split
-from sklearn.utils import shuffle
-from sklearn.metrics import f1_score
-
-
-def score_prediction(true_array, predicted_array):
-    return np.sum(true_array == predicted_array) * 100 / len(true_array)
-
-
-# 正規化する（これあるのとないのでスコアが違いすぎる笑）
-def normalize(X):
-    norm = np.linalg.norm(X, ord=2, axis=1)
-    return X / norm[:, np.newaxis]
-
-
-# MNISTのデータを読み込んでおく
-from sklearn import datasets
-mnist = datasets.fetch_mldata('MNIST original', data_home='.')
+# -*- coding: utf-8 -*-
+from commons import *
 
 rng = np.random.RandomState(1234)
 random_state = 42
 
-# 数が多いので制限する。dataとtargetはそれぞれ70000ずつある。
-N = 70000
+# 学習パラメーター
+HIDDEN_UNITS = 200
+LEARNING_RATE = 0.02
+N_EPOCHS = 30
+N_BATCHES = 10
 
-indices = np.random.permutation(range(70000))[:N]
-X = mnist.data[indices]
-y = mnist.target[indices]
-Y = np.eye(10)[y.astype(int)]  # 1-of-K表現
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size=0.8)
-
-X_train, X_test = normalize(X_train), normalize(X_test)
-y_test = np.argmax(Y_test, axis=1)
+X_train, X_test, Y_train, Y_test = load_mnist(N=70000)
 
 x = tf.placeholder(tf.float32, [None, 784])
 t = tf.placeholder(tf.float32, [None, 10])
 
-hidden_units = 200
+hidden_units = HIDDEN_UNITS
 W1 = tf.Variable(rng.uniform(low=-0.08, high=0.08, size=(784, hidden_units)).astype('float32'))
 W2 = tf.Variable(rng.uniform(low=-0.08, high=0.08, size=(hidden_units, 10)).astype('float32'))
 b1 = tf.Variable(np.zeros(hidden_units).astype('float32'))
 b2 = tf.Variable(np.zeros(10).astype('float32'))
 params = [W1, b1, W2, b2]
 
-for activation_function in [tf.nn.sigmoid, tf.nn.tanh, tf.nn.relu]:
+
+def main(X_train, X_test, Y_train, Y_test, activation_function):
     u1 = tf.matmul(x, W1) + b1
     z1 = activation_function(u1)
     u2 = tf.matmul(z1, W2) + b2
@@ -56,19 +34,20 @@ for activation_function in [tf.nn.sigmoid, tf.nn.tanh, tf.nn.relu]:
 
     gW1, gb1, gW2, gb2 = tf.gradients(cost, params)
 
-    esp = 0.02
+    eps = LEARNING_RATE
     updates = [
-        W1.assign_add(-esp * gW1),
-        b1.assign_add(-esp * gb1),
-        W2.assign_add(-esp * gW2),
-        b2.assign_add(-esp * gb2),
+        W1.assign_add(-eps * gW1),
+        b1.assign_add(-eps * gb1),
+        W2.assign_add(-eps * gW2),
+        b2.assign_add(-eps * gb2),
     ]
     train = tf.group(*updates)
 
     valid = tf.argmax(y, axis=1)
+    y_test = np.argmax(Y_test, axis=1)
 
-    n_epochs = 30
-    batch_size = 10
+    n_epochs = N_EPOCHS
+    batch_size = N_BATCHES
     n_batches = X_train.shape[0] // batch_size
 
     start_time = time.time()
@@ -82,4 +61,11 @@ for activation_function in [tf.nn.sigmoid, tf.nn.tanh, tf.nn.relu]:
                 sess.run(train, feed_dict={x: X_train[start:end], t: Y_train[start:end]})
             pred_y, valid_cost = sess.run([valid, cost], feed_dict={x: X_test, t: Y_test})
         during = time.time() - start_time
-        print('function: ', activation_function.__name__, ', f1 score: ', score_prediction(y_test, pred_y), ', time: ', during, 's')
+        print('function: ', activation_function.__name__, ', f1 score: ',
+              f1_score(y_test, pred_y, average='macro'), ', time: ', during, 's')
+
+
+if __name__ == '__main__':
+    main(X_train, X_test, Y_train, Y_test, tf.nn.sigmoid)
+    main(X_train, X_test, Y_train, Y_test, tf.nn.tanh)
+    main(X_train, X_test, Y_train, Y_test, tf.nn.relu)
