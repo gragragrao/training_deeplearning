@@ -1,5 +1,6 @@
-import numpy as np
-import tensorflow as tf
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from commons.libraries import *
 
 # define parameters
 w = tf.Variable(tf.zeros([2, 1]))

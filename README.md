@@ -8,7 +8,7 @@ This repository is for reviewing the logic of deep learning and implementing som
 - 「ゼロからわかる Deep Learning」(オライリー・ジャパン)
 - 「詳解 ディープラーニング」（巣籠悠輔氏著）
 
-# class I took
+# classes I took
 
 - AIL Deeplearning基礎講座（東大）
 - GCI 消費者インテリジェンス寄与講座（東大）
