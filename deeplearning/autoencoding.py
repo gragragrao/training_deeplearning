@@ -15,11 +15,11 @@ N_EPOCHS = 10
 N_BATCHES = 100
 
 
-class AutoEncoder:
+class Autoencoder:
     def __init__(self, vis_dim, hid_dim, W, function=lambda x: x):
         self.W = W
-        self.a = tf.Variable(np.zeros(vis_dim).astype('float32'))
-        self.b = tf.Variable(np.zeros(hid_dim).astype('float32'))
+        self.a = tf.Variable(np.zeros(vis_dim).astype('float32'), name='a')
+        self.b = tf.Variable(np.zeros(hid_dim).astype('float32'), name='b')
         self.function = function
         self.params = [self.W, self.a, self.b]
 
@@ -41,33 +41,41 @@ class AutoEncoder:
         error = -tf.reduce_mean(tf.reduce_sum(x * tf.log(reconst_x) + (1. - x) * tf.log(1. - reconst_x), axis=1))
         return error, reconst_x
 
-
 class Dense:
     def __init__(self, in_dim, out_dim, function):
-        self.W = tf.Variable(rng.uniform(low=-0.08, high=0.08, size=(in_dim, out_dim)).astype('float32'))
+        self.W = tf.Variable(rng.uniform(low=-0.08, high=0.08, size=(in_dim, out_dim)).astype('float32'), name='W')
         self.b = tf.Variable(np.zeros([out_dim]).astype('float32'))
         self.function = function
         self.params = [self.W, self.b]
 
-        self.auto_encoder = AutoEncoder(in_dim, out_dim, self.W, self.function)
+        self.ae = Autoencoder(in_dim, out_dim, self.W, self.function)
 
     def f_prop(self, x):
         u = tf.matmul(x, self.W) + self.b
-        return self.function(u)
+        self.z = self.function(u)
+        return self.z
 
     def pretrain(self, x, noise):
-        cost, reconst_x = self.auto_encoder.reconst_error(x, noise)
+        cost, reconst_x = self.ae.reconst_error(x, noise)
         return cost, reconst_x
 
+layers = [
+    Dense(784, 500, tf.nn.sigmoid),
+    Dense(500, 500, tf.nn.sigmoid),
+    Dense(500, 500, tf.nn.sigmoid),
+    Dense(500, 10, tf.nn.softmax)
+]
 
-def sgd(cost, params, eps=np.float32(LEARNING_RATE)):
+def sgd(cost, params, eps=np.float32(0.1)):
     g_params = tf.gradients(cost, params)
+
     updates = []
     for param, g_param in zip(params, g_params):
         if g_param is not None:
-            updates.append(param.assign_add(-eps * g_param))
+            updates.append(param.assign_add(-eps*g_param))
     return updates
 
+<<<<<<< HEAD
 
 layers = [
     Dense(VIS_UNITS, HIDDEN_UNITS, tf.nn.sigmoid),
@@ -75,17 +83,25 @@ layers = [
     Dense(HIDDEN_UNITS, 10, tf.nn.softmax)
 ]
 
+=======
+>>>>>>> cd413eb... 差分を確認
 X = np.copy(X_train)
 
 sess = tf.Session()
 init = tf.global_variables_initializer()
 sess.run(init)
-
 for l, layer in enumerate(layers[:-1]):
+<<<<<<< HEAD
     corruption_level = np.float(CORRUPTION_LEVEL)
     n_epochs = N_EPOCHS
     batch_size = N_BATCHES
     n_batches = X.shape[0] // batch_size
+=======
+    corruption_level = np.float(0.3)
+    batch_size = 100
+    n_batches = X.shape[0] // batch_size
+    n_epochs = 20
+>>>>>>> cd413eb... 差分を確認
 
     x = tf.placeholder(tf.float32)
     noise = tf.placeholder(tf.float32)
@@ -95,7 +111,6 @@ for l, layer in enumerate(layers[:-1]):
     train = sgd(cost, params)
     encode = layer.f_prop(x)
 
-    start_time = time.time()
     for epoch in range(n_epochs):
         X = shuffle(X, random_state=random_state)
         err_all = []
@@ -103,6 +118,7 @@ for l, layer in enumerate(layers[:-1]):
             start = i * batch_size
             end = start + batch_size
 
+<<<<<<< HEAD
             _noise = rng.binomial(size=X_train[start:end].shape, n=1, p=(1 - corruption_level))
             _, err = sess.run([train, cost], feed_dict={x: X[start:end], noise: _noise})  # 問題点
             err_all.append(err)
@@ -110,6 +126,12 @@ for l, layer in enumerate(layers[:-1]):
         if (epoch + 1) % 10 == 0:
             print("{}回目が終了。この層の学習開始から{}sが経過".format(epoch + 1, time.time() - start_time))
 
+=======
+            _noise = rng.binomial(size=X[start:end].shape, n=1, p=1-corruption_level)
+            _, err = sess.run([train, cost], feed_dict={x: X[start:end], noise: _noise})
+            err_all.append(err)
+
+>>>>>>> cd413eb... 差分を確認
     X = sess.run(encode, feed_dict={x: X})
 
 '''
