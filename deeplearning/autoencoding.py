@@ -75,7 +75,7 @@ layers = [
     Dense(HIDDEN_UNITS, 10, tf.nn.softmax)
 ]
 
-_X_train = np.copy(X_train)
+X = np.copy(X_train)
 
 sess = tf.Session()
 init = tf.global_variables_initializer()
@@ -85,7 +85,7 @@ for l, layer in enumerate(layers[:-1]):
     corruption_level = np.float(CORRUPTION_LEVEL)
     n_epochs = N_EPOCHS
     batch_size = N_BATCHES
-    n_batches = _X_train.shape[0] // batch_size
+    n_batches = X.shape[0] // batch_size
 
     x = tf.placeholder(tf.float32)
     noise = tf.placeholder(tf.float32)
@@ -97,20 +97,20 @@ for l, layer in enumerate(layers[:-1]):
 
     start_time = time.time()
     for epoch in range(n_epochs):
-        _X_train = shuffle(_X_train, random_state=random_state)
+        X = shuffle(X, random_state=random_state)
         err_all = []
         for i in range(n_batches):
             start = i * batch_size
             end = start + batch_size
 
             _noise = rng.binomial(size=X_train[start:end].shape, n=1, p=(1 - corruption_level))
-            _, err = sess.run([train, cost], feed_dict={x: _X_train[start:end], noise: _noise})  # 問題点
+            _, err = sess.run([train, cost], feed_dict={x: X[start:end], noise: _noise})  # 問題点
             err_all.append(err)
 
         if (epoch + 1) % 10 == 0:
             print("{}回目が終了。この層の学習開始から{}sが経過".format(epoch + 1, time.time() - start_time))
 
-    # X = sess.run(encode, feed_dict={x: X})
+    X = sess.run(encode, feed_dict={x: X})
 
 '''
 自己符号化器を使って学習をする前に、重みの可視化をしておく。
