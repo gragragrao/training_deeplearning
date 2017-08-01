@@ -6,6 +6,7 @@ from sklearn.utils import shuffle
 from sklearn.metrics import f1_score
 from sklearn import datasets
 import matplotlib.pyplot as plt
+from keras.datasets import cifar10
 
 
 # 正規化
@@ -26,3 +27,19 @@ def load_mnist(N=10000):
     X_train, X_test = normalize(X_train), normalize(X_test)
 
     return X_train, X_test, Y_train, Y_test
+
+
+def load_cifar(test_size=1000):
+    (cifar_X_1, cifar_y_1), (cifar_X_2, cifar_y_2) = cifar10.load_data()
+
+    cifar_X = np.r_[cifar_X_1, cifar_X_2]
+    cifar_y = np.r_[cifar_y_1, cifar_y_2]
+
+    cifar_X = cifar_X.astype('float32') / 255
+    cifar_y = np.eye(10)[cifar_y.astype('int32').flatten()]
+
+    train_X, test_X, train_y, test_y = train_test_split(cifar_X, cifar_y,
+                                                        test_size=test_size,
+                                                        random_state=42)
+
+    return (train_X, test_X, train_y, test_y)
