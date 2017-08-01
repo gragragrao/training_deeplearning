@@ -71,7 +71,9 @@ This repository is for reviewing the logic of deep learning and implementing som
 ＊ 畳み込み層：（フィルタ行数, フィルタ列数, 入力チャネル数, 出力チャネル数）
 
 
-精度：0.9919188852950059（）
+精度：0.9919188852950059
+
 時間：4970.1s
+
 
 （注意）スコアは `sklearn.metrics.f1_score` で計測しています。
