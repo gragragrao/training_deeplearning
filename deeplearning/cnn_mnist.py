@@ -8,8 +8,8 @@ random_state = 42
 X_train, X_test, Y_train, Y_test = load_mnist(N=70000)
 y_test = np.argmax(Y_test, axis=1)
 
-N_EPOCHS = 40
-BATCHE_SIZE = 100
+N_EPOCHS = 60
+BATCHE_SIZE = 30
 VIS_UNITS = X_train.shape[0]
 
 
@@ -70,16 +70,16 @@ class Dropout:
 
 
 layers = [
-    Conv((5, 5, 1, 40), tf.nn.re),
+    Conv((5, 5, 1, 30), tf.nn.tanh),
     Pooling(),
-    Conv((5, 5, 40, 80), tf.nn.relu),
+    Conv((5, 5, 30, 50), tf.nn.tanh),
     Pooling(strides=(1, 1, 1, 1)),
-    Conv((4, 4, 80, 120), tf.nn.relu),
+    Conv((4, 4, 50, 70), tf.nn.tanh),
     Pooling(strides=(1, 1, 1, 1)),
-    Conv((2, 2, 120, 150), tf.nn.relu),
+    Conv((2, 2, 70, 90), tf.nn.tanh),
     Pooling(ksize=(1, 1, 1, 1), strides=(1, 1, 1, 1)),
     Flatten(),
-    Dense(2 * 2 * 150, 10, tf.nn.softmax)
+    Dense(2 * 2 * 90, 10, tf.nn.softmax)
 ]
 
 x = tf.placeholder(tf.float32, [None, 28, 28, 1])
