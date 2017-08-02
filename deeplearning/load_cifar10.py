@@ -38,7 +38,6 @@ import numpy as np
 import pickle
 import os
 import download
-from dataset import one_hot_encoded
 
 ########################################################################
 
@@ -80,6 +79,28 @@ _num_images_train = _num_files_train * _images_per_file
 
 ########################################################################
 # Private functions for downloading, unpacking and loading data-files.
+
+
+def one_hot_encoded(class_numbers, num_classes=None):
+    """
+    Generate the One-Hot encoded class-labels from an array of integers.
+    For example, if class_number=2 and num_classes=4 then
+    the one-hot encoded label is the float array: [0. 0. 1. 0.]
+    :param class_numbers:
+        Array of integers with class-numbers.
+        Assume the integers are from zero to num_classes-1 inclusive.
+    :param num_classes:
+        Number of classes. If None then use max(class_numbers)+1.
+    :return:
+        2-dim array of shape: [len(class_numbers), num_classes]
+    """
+
+    # Find the number of classes if None is provided.
+    # Assumes the lowest class-number is zero.
+    if num_classes is None:
+        num_classes = np.max(class_numbers) + 1
+
+    return np.eye(num_classes, dtype=float)[class_numbers]
 
 
 def _get_file_path(filename=""):
