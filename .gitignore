@@ -11,17 +11,6 @@ __pycache__/
 *.log
 !.gitkeep
 
-#media/
-#!media/iconimage/nophoto/
-#static/
-#static/scouty/images/
-#static/scouty/select2-4.0.1/
-#static/lp/img/
-#static/lp/fonts/
-media/temp/*.jpg
-*\#*
-lp/templates/bkp/
-
 # Elastic Beanstalk Files
 #.elasticbeanstalk/
 #.elasticbeanstalk/*
@@ -34,6 +23,7 @@ lp/templates/bkp/
 *.sql
 *.dump
 *.dump.gz
+*.tar.gz
 *.swp
 *.psd
 *.ai
@@ -41,6 +31,8 @@ lp/templates/bkp/
 *.icloud
 
 *.psd
+
+deeplearning/cifar10/*
 
 docker/*/aws/credentials
 assets/*
